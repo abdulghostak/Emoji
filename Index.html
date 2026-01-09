@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji Cipher — Hide Text in One Emoji</title>  <!-- Google Font -->  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, #020617, #020617cc);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.7),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      outline: none;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.95rem;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    select {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      outline: none;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 1rem;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 10px 30px rgba(124,58,237,0.4);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 40px rgba(124,58,237,0.6);
+    }
+
+    .result {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #020617;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .emoji-output {
+      font-size: 3rem;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: none;
+      background: #0f172a;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 0.85rem;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .copy-btn:hover {
+      background: #020617;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+    }
+
+    footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+  </style></head>
+<body>  <div class="app">
+    <h1>🕵️ Emoji Cipher</h1>
+    <div class="subtitle">Hide secret text inside a single emoji</div><label for="inputText">Secret text</label>
+<textarea id="inputText" placeholder="Type the message you want to hide..."></textarea>
+
+<label for="emojiSelect" style="margin-top:14px">Choose emoji</label>
+<select id="emojiSelect">
+  <option value="👻">👻 Ghost</option>
+  <option value="🔥">🔥 Fire</option>
+  <option value="🖤">🖤 Black Heart</option>
+  <option value="🌙">🌙 Moon</option>
+  <option value="🧠">🧠 Brain</option>
+  <option value="🌸">🌸 Flower</option>
+</select>
+
+<button onclick="encode()">Encode Message</button>
+
+<div class="result" id="result" style="display:none">
+  <div class="emoji-output" id="output"></div>
+  <button class="copy-btn" onclick="copyEmoji()">Copy Emoji</button>
+  <div class="hint">Looks like one emoji — but your text is hidden inside.</div>
+</div>
+
+<footer>
+  Works on social media · Decode with AI or Unicode tools
+</footer>
+
+  </div>  <script>
+    // Zero-width characters for steganography
+    const ZW0 = '\u200B'; // binary 0
+    const ZW1 = '\u200C'; // binary 1
+    const ZWSEP = '\u200D'; // separator
+
+    function textToBinary(text) {
+      return text
+        .split('')
+        .map(c => c.charCodeAt(0).toString(2).padStart(8, '0'))
+        .join(ZWSEP);
+    }
+
+    function encode() {
+      const text = document.getElementById('inputText').value.trim();
+      const emoji = document.getElementById('emojiSelect').value;
+
+      if (!text) {
+        alert('Please enter some text to hide');
+        return;
+      }
+
+      const hidden = textToBinary(text)
+        .replace(/0/g, ZW0)
+        .replace(/1/g, ZW1);
+
+      const encoded = emoji + hidden;
+      document.getElementById('output').innerText = encoded;
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function copyEmoji() {
+      const text = document.getElementById('output').innerText;
+      navigator.clipboard.writeText(text);
+      alert('Emoji copied!');
+    }
+  </script></body>
+  </html>
