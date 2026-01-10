@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Invisible Text Generator</title>
+<title>True Invisible Text Generator</title>
 <style>
 body {background:#111; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh;}
 .box {background:#222; padding:20px; border-radius:16px; width:90%; max-width:480px;}
@@ -14,8 +14,8 @@ button {background:#00ffaa; font-weight:bold; cursor:pointer;}
 <body>
 
 <div class="box">
-<h2>Invisible Text Generator</h2>
-<textarea id="text" placeholder="Type text to make invisible"></textarea>
+<h2>Truly Invisible Text Generator</h2>
+<textarea id="text" placeholder="Type text to hide"></textarea>
 <button onclick="generate()">Generate Invisible Text</button>
 <div class="output" id="output"></div>
 </div>
@@ -26,8 +26,12 @@ function generate() {
     let invisible = '';
 
     for (let i = 0; i < text.length; i++) {
-        // Using Unicode zero-width characters to hide the text
-        invisible += text[i] + '\u200B'; // \u200B = zero-width space
+        const code = text.charCodeAt(i); // get Unicode code
+        const binary = code.toString(2).padStart(16,'0'); // convert to 16-bit binary
+        for (let b = 0; b < binary.length; b++) {
+            // Map 0 → zero-width space, 1 → zero-width non-joiner
+            invisible += binary[b] === '0' ? '\u200B' : '\u200C';
+        }
     }
 
     document.getElementById("output").textContent = invisible;
