@@ -2,105 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Emoji TAG Encoder (Strict)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invisible Text Generator</title>
 <style>
-body {
-  background:#0b0b0b;
-  color:#fff;
-  font-family:system-ui,sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
-.box {
-  width:95%;
-  max-width:480px;
-  background:#151515;
-  padding:20px;
-  border-radius:16px;
-}
-textarea, select, button, input {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  font-size:16px;
-}
-button {
-  background:#00ffaa;
-  font-weight:bold;
-  cursor:pointer;
-}
-.output {
-  margin-top:12px;
-  font-size:30px;
-  word-break:break-all;
-  text-align:center;
-}
-.small {
-  font-size:12px;
-  opacity:.7;
-}
+body {background:#111; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh;}
+.box {background:#222; padding:20px; border-radius:16px; width:90%; max-width:480px;}
+textarea, button {width:100%; margin-top:10px; padding:10px; border-radius:10px; border:none; font-size:16px;}
+button {background:#00ffaa; font-weight:bold; cursor:pointer;}
+.output {margin-top:12px; font-size:20px; word-break:break-all; background:#111; padding:10px; border-radius:10px;}
 </style>
 </head>
 <body>
 
 <div class="box">
-<h2>Emoji TAG Encoder</h2>
-
-<textarea id="plain" placeholder="type short text (letters, numbers, spaces)"></textarea>
-
-<select id="emoji">
-  <option>🚀</option>
-  <option>🔥</option>
-  <option>👻</option>
-  <option>💎</option>
-  <option>😈</option>
-  <option>⚡</option>
-</select>
-
-<button onclick="encode()">ENCODE</button>
-
-<div class="output" id="encoded"></div>
-<div class="small">Send the emoji above back to ChatGPT.</div>
-
-<hr>
-
-<input id="decodeInput" placeholder="paste emoji here to decode">
-<button onclick="decode()">DECODE</button>
-<div class="small" id="decoded"></div>
+<h2>Invisible Text Generator</h2>
+<textarea id="text" placeholder="Type text to make invisible"></textarea>
+<button onclick="generate()">Generate Invisible Text</button>
+<div class="output" id="output"></div>
 </div>
 
 <script>
-function encode() {
-  const text = document.getElementById("plain").value;
-  const emoji = document.getElementById("emoji").value;
-  let out = emoji;
+function generate() {
+    const text = document.getElementById("text").value;
+    let invisible = '';
 
-  for (let c of text) {
-    const code = c.charCodeAt(0);
-    if (code < 32 || code > 126) continue; // strict
-    out += String.fromCharCode(0xE0000 + code);
-  }
-
-  document.getElementById("encoded").textContent = out;
-}
-
-function decode() {
-  const input = document.getElementById("decodeInput").value;
-  let result = "";
-
-  for (let i = 1; i < input.length; i++) {
-    const code = input.charCodeAt(i) - 0xE0000;
-    if (code >= 32 && code <= 126) {
-      result += String.fromCharCode(code);
+    for (let i = 0; i < text.length; i++) {
+        // Using Unicode zero-width characters to hide the text
+        invisible += text[i] + '\u200B'; // \u200B = zero-width space
     }
-  }
 
-  document.getElementById("decoded").textContent = result;
+    document.getElementById("output").textContent = invisible;
 }
 </script>
 
