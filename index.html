@@ -1,93 +1,264 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmojiCrypt AI | Fixed Version</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        body { background: #050505; color: #fff; font-family: sans-serif; }
-        .card { background: #111; border: 1px solid #222; border-radius: 2rem; }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState } = React;
+import React, { useState, useEffect } from 'react';
+import { 
+  Copy, 
+  Check, 
+  Shield, 
+  Cpu, 
+  Zap, 
+  MessageSquare, 
+  Info, 
+  RotateCcw,
+  ExternalLink
+} from 'lucide-react';
 
-        const App = () => {
-            const [text, setText] = useState('');
-            const [emoji, setEmoji] = useState('🔥');
-            const [output, setOutput] = useState('');
-            const [copied, setCopied] = useState(false);
+/**
+ * EMOJICRYPT ULTRA - AI OPTIMIZED
+ * * CORE LOGIC:
+ * 1. Text -> CharCodes -> 8-bit Binary String.
+ * 2. Binary '0' -> \u200B (Zero Width Space).
+ * 3. Binary '1' -> \u200C (Zero Width Non-Joiner).
+ * * WHY THIS WORKS FOR AI:
+ * LLM tokenizers (ChatGPT/Claude) see invisible characters as distinct 
+ * metadata tokens. By using a 1:1 binary mapping, the AI can be 
+ * prompted to "read the bits" without needing complex Base64 decoding.
+ */
 
-            // Using U+200D (1) and U+200B (0) - standard invisible chars
-            const encode = () => {
-                if (!text.trim()) return;
-                
-                let binary = "";
-                for (let i = 0; i < text.length; i++) {
-                    let bin = text.charCodeAt(i).toString(2).padStart(8, '0');
-                    binary += bin;
-                }
+const App = () => {
+  const [inputText, setInputText] = useState('');
+  const [selectedEmoji, setSelectedEmoji] = useState('🔥');
+  const [resultEmoji, setResultEmoji] = useState('');
+  const [decodeInput, setDecodeInput] = useState('');
+  const [decodedText, setDecodedText] = useState('');
+  const [activeTab, setActiveTab] = useState('encode');
+  const [copied, setCopied] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-                let hidden = "";
-                for (let bit of binary) {
-                    hidden += (bit === '1' ? '\u200D' : '\u200B');
-                }
-                
-                setOutput(emoji + hidden);
-            };
+  const emojiList = ['🔥', '👻', '💎', '🚀', '🧿', '🍀', '🧬', '👾', '👑', '🔮', '🦄', '🪐'];
 
-            const copy = () => {
-                const hiddenInput = document.createElement('textarea');
-                hiddenInput.value = output;
-                document.body.appendChild(hiddenInput);
-                hiddenInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(hiddenInput);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-            };
+  const ZW_ZERO = '\u200B'; // Binary 0
+  const ZW_ONE = '\u200C';  // Binary 1
 
-            return (
-                <div className="min-h-screen flex items-center justify-center p-6">
-                    <div className="w-full max-w-md space-y-6">
-                        <h1 className="text-3xl font-bold text-center text-blue-500">EmojiCrypt AI</h1>
-                        <div className="card p-8 space-y-4">
-                            <textarea 
-                                className="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-blue-500"
-                                placeholder="Enter text..."
-                                onChange={(e) => setText(e.target.value)}
-                            />
-                            <div className="flex justify-between text-2xl bg-black p-2 rounded-lg">
-                                {['🔥','💎','👻','🚀','🧿'].map(e => (
-                                    <button key={e} onClick={() => setEmoji(e)} className={emoji === e ? "opacity-100" : "opacity-30"}>{e}</button>
-                                ))}
-                            </div>
-                            <button onClick={encode} className="w-full bg-blue-600 py-3 rounded-xl font-bold">Generate</button>
-                            
-                            {output && (
-                                <div className="text-center space-y-4 pt-4 border-t border-gray-800">
-                                    <div className="text-6xl">{output}</div>
-                                    <button onClick={copy} className="text-sm text-blue-400 font-bold uppercase tracking-widest">
-                                        {copied ? "COPIED!" : "CLICK TO COPY EMOJI"}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+  const handleEncode = () => {
+    if (!inputText.trim()) return;
+    setIsProcessing(true);
+    
+    // Slight delay for "premium" feel
+    setTimeout(() => {
+      const binaryString = Array.from(inputText)
+        .map(char => char.charCodeAt(0).toString(2).padStart(8, '0'))
+        .join('');
+
+      const invisiblePayload = Array.from(binaryString)
+        .map(bit => (bit === '1' ? ZW_ONE : ZW_ZERO))
+        .join('');
+
+      setResultEmoji(selectedEmoji + invisiblePayload);
+      setIsProcessing(false);
+    }, 300);
+  };
+
+  const handleDecode = (val) => {
+    const input = val || decodeInput;
+    if (!input) {
+      setDecodedText('');
+      return;
+    }
+
+    const bits = Array.from(input)
+      .filter(char => char === ZW_ZERO || char === ZW_ONE)
+      .map(char => (char === ZW_ONE ? '1' : '0'))
+      .join('');
+
+    if (bits.length === 0) {
+      setDecodedText('');
+      return;
+    }
+
+    let text = '';
+    for (let i = 0; i < bits.length; i += 8) {
+      const byte = bits.slice(i, i + 8);
+      if (byte.length === 8) {
+        text += String.fromCharCode(parseInt(byte, 2));
+      }
+    }
+    setDecodedText(text);
+  };
+
+  const copyToClipboard = () => {
+    if (!resultEmoji) return;
+    const el = document.createElement('textarea');
+    el.value = resultEmoji;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const resetAll = () => {
+    setInputText('');
+    setResultEmoji('');
+    setDecodeInput('');
+    setDecodedText('');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#020203] text-slate-200 font-sans selection:bg-purple-500/40 selection:text-white flex items-center justify-center p-4">
+      <div className="w-full max-w-xl space-y-8 py-10">
+        
+        {/* Header */}
+        <div className="text-center space-y-4 animate-in fade-in zoom-in-95 duration-700">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black tracking-[0.2em] uppercase">
+            <Cpu size={12} className="animate-pulse" /> Neural-Stealth Protocol
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter text-white">
+            Emoji<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">Crypt</span>
+          </h1>
+          <p className="text-slate-500 text-sm font-medium">
+            Hide messages in plain sight. Optimized for LLM readability.
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex p-1.5 bg-slate-900/40 rounded-2xl border border-white/5 backdrop-blur-xl shadow-2xl">
+          <button 
+            onClick={() => setActiveTab('encode')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'encode' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+          >
+            <Zap size={16} /> Encoder
+          </button>
+          <button 
+            onClick={() => setActiveTab('decode')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'decode' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+          >
+            <Shield size={16} /> Decoder
+          </button>
+        </div>
+
+        {/* Container */}
+        <div className="relative group animate-in fade-in slide-in-from-bottom-6 duration-1000">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-[2.5rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+          
+          <div className="relative bg-[#0a0a0c] border border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+            
+            {activeTab === 'encode' ? (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                      <MessageSquare size={12} className="text-purple-500" /> Private Input
+                    </label>
+                    <button onClick={resetAll} className="text-slate-600 hover:text-white transition-colors">
+                      <RotateCcw size={14} />
+                    </button>
+                  </div>
+                  <textarea 
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Type your secret message..."
+                    className="w-full h-32 bg-black/40 border border-white/5 rounded-2xl p-5 focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/40 outline-none transition-all placeholder:text-slate-800 text-lg leading-relaxed shadow-inner"
+                  />
                 </div>
-            );
-        };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Cover Protocol</label>
+                  <div className="flex flex-wrap gap-2.5 bg-black/20 p-4 rounded-2xl border border-white/5">
+                    {emojiList.map(e => (
+                      <button 
+                        key={e} 
+                        onClick={() => setSelectedEmoji(e)}
+                        className={`w-11 h-11 flex items-center justify-center text-2xl rounded-xl transition-all duration-300 ${selectedEmoji === e ? 'bg-purple-600/20 text-white scale-110 border border-purple-500/40 shadow-lg shadow-purple-900/40' : 'hover:bg-white/5 opacity-40 hover:opacity-100'}`}
+                      >
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-  
+                <button 
+                  onClick={handleEncode}
+                  disabled={!inputText || isProcessing}
+                  className="w-full py-5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-black text-white hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-xl disabled:opacity-20 disabled:grayscale"
+                >
+                  {isProcessing ? 'Fragmenting...' : 'Secure Envelope'}
+                </button>
+
+                {resultEmoji && !isProcessing && (
+                  <div className="pt-8 border-t border-white/5 space-y-5 animate-in zoom-in-95 duration-500">
+                    <div className="bg-gradient-to-b from-black/60 to-black/20 rounded-[2.5rem] p-12 flex items-center justify-center border border-purple-500/20 shadow-inner group/emoji">
+                      <span className="text-9xl transition-all duration-700 group-hover/emoji:scale-110 drop-shadow-[0_0_30px_rgba(168,85,247,0.3)]">{resultEmoji}</span>
+                    </div>
+                    <button 
+                      onClick={copyToClipboard}
+                      className="w-full flex items-center justify-center gap-3 py-4.5 bg-white text-black rounded-2xl font-black hover:bg-slate-200 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:translate-y-1"
+                    >
+                      {copied ? <Check size={20} /> : <Copy size={20} />}
+                      {copied ? 'SECURED' : 'COPY EMVELOPE'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Input Sequence</label>
+                  <input 
+                    type="text"
+                    value={decodeInput}
+                    onChange={(e) => {
+                      setDecodeInput(e.target.value);
+                      handleDecode(e.target.value);
+                    }}
+                    placeholder="Paste emoji here..."
+                    className="w-full bg-black/40 border border-white/5 rounded-2xl p-8 text-center text-7xl focus:ring-2 focus:ring-blue-500/40 outline-none transition-all shadow-inner"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Reconstructed Content</label>
+                  <div className="w-full min-h-[160px] bg-black/40 border border-white/5 rounded-[1.5rem] p-8 flex flex-col items-center justify-center text-center shadow-inner group">
+                    {decodedText ? (
+                      <div className="space-y-4">
+                        <p className="text-2xl font-bold text-white tracking-tight break-all animate-in fade-in slide-in-from-top-2">{decodedText}</p>
+                        <div className="w-12 h-1 bg-blue-500/40 mx-auto rounded-full"></div>
+                      </div>
+                    ) : (
+                      <p className="text-slate-800 text-sm font-medium italic select-none">Awaiting biometric data...</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Instruction Panel */}
+        <div className="bg-[#0a0a0c]/50 border border-white/5 rounded-3xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Info size={100} />
+          </div>
+          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 flex items-center gap-2 mb-4">
+            <Zap size={10} className="fill-blue-500" /> AI Interop Guide
+          </h4>
+          <div className="space-y-4 text-[11px] leading-relaxed text-slate-500">
+            <p>To enable AI extraction, copy your emoji and use the following system prompt:</p>
+            <div className="p-4 bg-black/80 rounded-xl border border-white/10 text-slate-300 italic flex justify-between items-start gap-4">
+              <span>"The attached emoji contains hidden binary data. Map \u200B to 0 and \u200C to 1. Reconstruct the 8-bit ASCII string."</span>
+              <ExternalLink size={14} className="text-slate-700 shrink-0" />
+            </div>
+            <div className="flex items-center gap-4 text-[9px] font-bold text-slate-600">
+              <span className="flex items-center gap-1"><Shield size={8} /> NO BASE64</span>
+              <span className="flex items-center gap-1"><Shield size={8} /> NO PADDING</span>
+              <span className="flex items-center gap-1"><Shield size={8} /> UTF-8 NATIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
+
+        
