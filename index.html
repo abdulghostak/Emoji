@@ -2,41 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>True Invisible Text Generator</title>
+<title>Hidden Text + Invisible Text Generator</title>
 <style>
-body {background:#111; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh;}
-.box {background:#222; padding:20px; border-radius:16px; width:90%; max-width:480px;}
-textarea, button {width:100%; margin-top:10px; padding:10px; border-radius:10px; border:none; font-size:16px;}
+body {background:#111; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:flex-start; padding:20px; min-height:100vh;}
+.container {width:100%; max-width:600px; background:#222; padding:20px; border-radius:16px;}
+textarea, input, button {width:100%; margin-top:10px; padding:10px; border-radius:10px; border:none; font-size:16px;}
 button {background:#00ffaa; font-weight:bold; cursor:pointer;}
-.output {margin-top:12px; font-size:20px; word-break:break-all; background:#111; padding:10px; border-radius:10px;}
+.output {margin-top:12px; font-size:20px; word-break:break-all; background:#111; padding:10px; border-radius:10px; min-height:50px;}
+h2 {margin:0;}
 </style>
 </head>
 <body>
+<div class="container">
+<h2>Emoji Hidden Text</h2>
+<input id="emojiInput" type="text" placeholder="Pick an emoji (e.g. 🚀)" maxlength="2">
+<textarea id="hiddenText" placeholder="Text to hide inside emoji"></textarea>
+<button onclick="generateEmoji()">Generate Hidden Emoji</button>
+<div class="output" id="emojiOutput"></div>
 
-<div class="box">
-<h2>Truly Invisible Text Generator</h2>
-<textarea id="text" placeholder="Type text to hide"></textarea>
-<button onclick="generate()">Generate Invisible Text</button>
-<div class="output" id="output"></div>
+<hr style="margin:20px 0; border-color:#333;">
+
+<h2>Invisible Text Section</h2>
+<textarea id="invisibleText" placeholder="Type text to make invisible"></textarea>
+<button onclick="generateInvisible()">Generate Invisible Text</button>
+<div class="output" id="invisibleOutput"></div>
 </div>
 
 <script>
-function generate() {
-    const text = document.getElementById("text").value;
-    let invisible = '';
+// ---- Emoji Hidden Text Section ----
+function generateEmoji() {
+    const emoji = document.getElementById("emojiInput").value || '🔥';
+    const text = document.getElementById("hiddenText").value;
+    let encoded = '';
 
-    for (let i = 0; i < text.length; i++) {
-        const code = text.charCodeAt(i); // get Unicode code
-        const binary = code.toString(2).padStart(16,'0'); // convert to 16-bit binary
-        for (let b = 0; b < binary.length; b++) {
-            // Map 0 → zero-width space, 1 → zero-width non-joiner
-            invisible += binary[b] === '0' ? '\u200B' : '\u200C';
+    // Convert each character to binary and map to zero-width characters
+    for(let i=0; i<text.length; i++){
+        const bin = text.charCodeAt(i).toString(2).padStart(16,'0');
+        for(let b=0;b<bin.length;b++){
+            encoded += bin[b]==='0'?'\u200B':'\u200C';
         }
     }
 
-    document.getElementById("output").textContent = invisible;
+    document.getElementById("emojiOutput").textContent = emoji + encoded;
+}
+
+// ---- Invisible Text Section ----
+function generateInvisible() {
+    const text = document.getElementById("invisibleText").value;
+    let invisible = '';
+
+    for(let i=0;i<text.length;i++){
+        const bin = text.charCodeAt(i).toString(2).padStart(16,'0');
+        for(let b=0;b<bin.length;b++){
+            invisible += bin[b]==='0'?'\u200B':'\u200C';
+        }
+    }
+
+    document.getElementById("invisibleOutput").textContent = invisible;
 }
 </script>
-
 </body>
 </html>
