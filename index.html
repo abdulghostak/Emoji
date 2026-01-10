@@ -14,7 +14,8 @@ body {
     color: #fff;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding: 20px;
     min-height: 100vh;
 }
 
@@ -29,11 +30,21 @@ body {
     backdrop-filter: blur(10px);
 }
 
+/* Brand name */
+.brand {
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: #00ffaa;
+    margin-bottom: 10px;
+    letter-spacing: 3px;
+}
+
 /* Heading */
 h1 {
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8em;
+    margin: 0 0 20px 0;
+    font-size: 1.6em;
     color: #00ffaa;
 }
 
@@ -86,7 +97,8 @@ button:hover {
 
 /* Mobile optimization */
 @media (max-width: 500px) {
-    h1 { font-size: 1.5em; }
+    .brand { font-size: 1.7em; }
+    h1 { font-size: 1.4em; }
     button { font-size: 16px; padding: 12px; }
 }
 </style>
@@ -94,6 +106,7 @@ button:hover {
 <body>
 
 <div class="container">
+    <div class="brand">GHOST AK</div>
     <h1>Invisible Text Generator</h1>
     <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
     <button onclick="generateInvisible()">Generate Invisible Text</button>
