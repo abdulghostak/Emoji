@@ -1,107 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Ghost Emoji Encoder 👻</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body {
-  background: radial-gradient(circle at top, #0f2027, #000);
-  color: #fff;
-  font-family: system-ui, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-.container {
-  width: 95%;
-  max-width: 480px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 0 40px rgba(0,255,255,0.15);
-}
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-textarea, select, button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-}
-textarea {
-  resize: none;
-  height: 100px;
-}
-button {
-  background: linear-gradient(90deg, #00f5ff, #7cff00);
-  font-weight: bold;
-  cursor: pointer;
-}
-.output {
-  margin-top: 16px;
-  word-break: break-all;
-  text-align: center;
-  font-size: 32px;
-}
-.small {
-  font-size: 12px;
-  opacity: 0.7;
-  text-align: center;
-  margin-top: 8px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmojiCrypt AI | Fixed Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { background: #050505; color: #fff; font-family: sans-serif; }
+        .card { background: #111; border: 1px solid #222; border-radius: 2rem; }
+    </style>
 </head>
 <body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
 
-<div class="container">
-  <h1>👻 Ghost Emoji Encoder</h1>
+        const App = () => {
+            const [text, setText] = useState('');
+            const [emoji, setEmoji] = useState('🔥');
+            const [output, setOutput] = useState('');
+            const [copied, setCopied] = useState(false);
 
-  <textarea id="input" placeholder="Type text to hide..."></textarea>
+            // Using U+200D (1) and U+200B (0) - standard invisible chars
+            const encode = () => {
+                if (!text.trim()) return;
+                
+                let binary = "";
+                for (let i = 0; i < text.length; i++) {
+                    let bin = text.charCodeAt(i).toString(2).padStart(8, '0');
+                    binary += bin;
+                }
 
-  <select id="emoji">
-    <option value="👻">👻 Ghost</option>
-    <option value="🔥">🔥 Fire</option>
-    <option value="💎">💎 Diamond</option>
-    <option value="😈">😈 Devil</option>
-  </select>
+                let hidden = "";
+                for (let bit of binary) {
+                    hidden += (bit === '1' ? '\u200D' : '\u200B');
+                }
+                
+                setOutput(emoji + hidden);
+            };
 
-  <button onclick="encode()">Encode into Emoji</button>
+            const copy = () => {
+                const hiddenInput = document.createElement('textarea');
+                hiddenInput.value = output;
+                document.body.appendChild(hiddenInput);
+                hiddenInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(hiddenInput);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
 
-  <div class="output" id="output"></div>
-  <div class="small">Looks like one emoji. Contains hidden data.</div>
-</div>
+            return (
+                <div className="min-h-screen flex items-center justify-center p-6">
+                    <div className="w-full max-w-md space-y-6">
+                        <h1 className="text-3xl font-bold text-center text-blue-500">EmojiCrypt AI</h1>
+                        <div className="card p-8 space-y-4">
+                            <textarea 
+                                className="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-blue-500"
+                                placeholder="Enter text..."
+                                onChange={(e) => setText(e.target.value)}
+                            />
+                            <div className="flex justify-between text-2xl bg-black p-2 rounded-lg">
+                                {['🔥','💎','👻','🚀','🧿'].map(e => (
+                                    <button key={e} onClick={() => setEmoji(e)} className={emoji === e ? "opacity-100" : "opacity-30"}>{e}</button>
+                                ))}
+                            </div>
+                            <button onClick={encode} className="w-full bg-blue-600 py-3 rounded-xl font-bold">Generate</button>
+                            
+                            {output && (
+                                <div className="text-center space-y-4 pt-4 border-t border-gray-800">
+                                    <div className="text-6xl">{output}</div>
+                                    <button onClick={copy} className="text-sm text-blue-400 font-bold uppercase tracking-widest">
+                                        {copied ? "COPIED!" : "CLICK TO COPY EMOJI"}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
-<script>
-const ZW0 = "\u200B"; // zero-width space = 0
-const ZW1 = "\u200C"; // zero-width non-joiner = 1
-
-function textToBinary(text) {
-  return [...new TextEncoder().encode(text)]
-    .map(b => b.toString(2).padStart(8, "0"))
-    .join("");
-}
-
-function encode() {
-  const text = document.getElementById("input").value;
-  const emoji = document.getElementById("emoji").value;
-  if (!text) return;
-
-  const binary = textToBinary(text);
-  let hidden = "";
-
-  for (let bit of binary) {
-    hidden += bit === "0" ? ZW0 : ZW1;
-  }
-
-  document.getElementById("output").textContent = emoji + hidden;
-}
-</script>
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
+
+  
