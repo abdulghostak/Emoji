@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invisible Text Generator</title>
+
+<!-- Link Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00ffaa">
+
 <style>
 /* General body & layout */
 body {
@@ -31,7 +36,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    box-sizing: border-box; /* make sure content stays inside */
+    box-sizing: border-box;
 }
 
 /* Brand name */
@@ -89,7 +94,7 @@ button:hover {
 .output {
     min-height: 100px;
     word-break: break-word;
-    display: none; /* hidden initially */
+    display: none;
 }
 
 /* Mobile optimization */
@@ -145,6 +150,15 @@ function copyInvisible() {
     output.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(output.value);
     alert("Invisible text copied!");
+}
+
+// ---- Service Worker Registration ----
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(err => console.log('Service Worker Failed', err));
+    });
 }
 </script>
 
