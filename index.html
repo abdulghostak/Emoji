@@ -3,157 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmojiCrypt AI - Hidden Messaging</title>
+    <title>EmojiCrypt AI | Professional Steganography</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: #050505;
-            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0c;
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
-        .ai-glow {
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
-            border: 1px solid rgba(168, 85, 247, 0.3);
+        .glow-border {
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
-        .gradient-text {
-            background: linear-gradient(to right, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .glow-border:hover {
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
         }
-        .animate-pulse-slow {
-            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .gradient-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            transition: transform 0.2s, opacity 0.2s;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
+        .gradient-btn:active { transform: scale(0.98); }
+        .gradient-btn:hover { opacity: 0.9; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2d2d35; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useCallback } = React;
+
+        // Configuration for standard encoding
+        // 0 = \u200B (Zero Width Space)
+        // 1 = \u200C (Zero Width Non-Joiner)
+        const ZW_MAP = { '0': '\u200B', '1': '\u200C' };
+        const ZW_REV = { '\u200B': '0', '\u200C': '1' };
 
         const App = () => {
-            const [text, setText] = useState('');
-            const [emoji, setEmoji] = useState('🔮');
-            const [result, setResult] = useState('');
+            const [inputText, setInputText] = useState('');
+            const [selectedEmoji, setSelectedEmoji] = useState('🔥');
+            const [encodedOutput, setEncodedOutput] = useState('');
             const [decodeInput, setDecodeInput] = useState('');
-            const [decoded, setDecoded] = useState('');
-            const [tab, setTab] = useState('encode');
-            const [copied, setCopied] = useState(false);
+            const [decodedResult, setDecodedResult] = useState('');
+            const [activeTab, setActiveTab] = useState('encode');
+            const [copyLabel, setCopyLabel] = useState('Copy Emoji');
 
-            const emojis = ['🔮', '🧠', '💎', '🛸', '👻', '🔥', '🧬', '🧿', '🌑', '🎭'];
+            const emojis = ['🔥', '👻', '😈', '💎', '🚀', '🧿', '🍀', '🧬', '👾', '👑'];
 
-            // AI-Readable Tag Character Encoding (U+E0020 - U+E007E)
             const encode = () => {
-                if (!text) return;
-                // We map standard ASCII to the Unicode Tag block
-                // This block is specifically for metadata/language tagging
-                const hidden = Array.from(text).map(char => {
-                    const code = char.charCodeAt(0);
-                    return String.fromCodePoint(code + 0xE0000);
+                if (!inputText) return;
+                
+                // 1. Convert text to binary (8-bit per char)
+                const binary = inputText.split('').map(char => {
+                    return char.charCodeAt(0).toString(2).padStart(8, '0');
                 }).join('');
-                setResult(emoji + hidden);
+
+                // 2. Map binary to zero-width characters
+                const hiddenString = binary.split('').map(bit => ZW_MAP[bit]).join('');
+                
+                // 3. Append to emoji
+                setEncodedOutput(selectedEmoji + hiddenString);
             };
 
             const decode = (val) => {
-                const input = val || decodeInput;
-                // Extract points in the E0000 block
-                const points = Array.from(input).filter(char => {
-                    const cp = char.codePointAt(0);
-                    return cp >= 0xE0020 && cp <= 0xE007E + 0xE0000;
-                });
+                const target = val || decodeInput;
+                if (!target) return;
 
-                if (points.length === 0) {
-                    setDecoded("No AI-hidden text found.");
+                // Extract only our specific zero-width characters
+                const chars = Array.from(target).filter(c => ZW_REV[c]);
+                
+                if (chars.length === 0) {
+                    setDecodedResult("No hidden data found.");
                     return;
                 }
 
-                const msg = points.map(char => {
-                    return String.fromCodePoint(char.codePointAt(0) - 0xE0000);
-                }).join('');
-                setDecoded(msg);
+                const binary = chars.map(c => ZW_REV[c]).join('');
+                
+                // Convert binary back to string
+                let text = "";
+                for (let i = 0; i < binary.length; i += 8) {
+                    const byte = binary.slice(i, i + 8);
+                    if (byte.length === 8) {
+                        text += String.fromCharCode(parseInt(byte, 2));
+                    }
+                }
+                setDecodedResult(text);
             };
 
-            const doCopy = () => {
-                const el = document.createElement('textarea');
-                el.value = result;
-                document.body.appendChild(el);
-                el.select();
+            const copy = () => {
+                const area = document.createElement('textarea');
+                area.value = encodedOutput;
+                document.body.appendChild(area);
+                area.select();
                 document.execCommand('copy');
-                document.body.removeChild(el);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
+                document.body.removeChild(area);
+                
+                setCopyLabel('Copied!');
+                setTimeout(() => setCopyLabel('Copy Emoji'), 2000);
             };
 
             return (
                 <div className="min-h-screen flex items-center justify-center p-4">
-                    <div className="w-full max-w-lg space-y-6">
+                    <div className="w-full max-w-lg space-y-8">
                         
+                        {/* Header */}
                         <div className="text-center space-y-2">
-                            <h1 className="text-5xl font-bold tracking-tighter gradient-text">EmojiCrypt AI</h1>
-                            <p className="text-gray-400 text-sm tracking-widest uppercase">Stealth Machine-Readable Data</p>
+                            <h1 className="text-4xl font-extrabold tracking-tighter text-white">
+                                <span className="text-blue-500 underline decoration-blue-500/30">Emoji</span>Crypt AI
+                            </h1>
+                            <p className="text-slate-500 text-sm font-medium uppercase tracking-[0.2em]">Secret AI-Readable Envelopes</p>
                         </div>
 
-                        <div className="flex bg-gray-900/50 p-1 rounded-2xl border border-gray-800">
-                            <button onClick={() => setTab('encode')} className={`flex-1 py-3 rounded-xl transition-all ${tab === 'encode' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-500'}`}>Encode</button>
-                            <button onClick={() => setTab('decode')} className={`flex-1 py-3 rounded-xl transition-all ${tab === 'decode' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-500'}`}>Decode</button>
+                        {/* Tabs */}
+                        <div className="flex bg-[#16161a] p-1.5 rounded-2xl border border-white/5">
+                            <button 
+                                onClick={() => setActiveTab('encode')}
+                                className={`flex-1 py-3 rounded-xl font-semibold transition-all ${activeTab === 'encode' ? 'bg-[#25252d] text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                Encode
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('decode')}
+                                className={`flex-1 py-3 rounded-xl font-semibold transition-all ${activeTab === 'decode' ? 'bg-[#25252d] text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                Decode
+                            </button>
                         </div>
 
-                        <div className="ai-glow bg-gray-900/40 backdrop-blur-xl p-8 rounded-[2rem] space-y-6">
-                            {tab === 'encode' ? (
-                                <div className="space-y-6 animate-in fade-in">
-                                    <textarea 
-                                        value={text}
-                                        onChange={(e) => setText(e.target.value)}
-                                        placeholder="Enter secret message for the AI..."
-                                        className="w-full bg-black/40 border border-gray-800 rounded-2xl p-4 h-32 focus:border-purple-500 outline-none transition-all"
-                                    />
-                                    
-                                    <div className="flex justify-between bg-black/20 p-3 rounded-2xl">
-                                        {emojis.map(e => (
-                                            <button key={e} onClick={() => setEmoji(e)} className={`text-2xl transition-transform ${emoji === e ? 'scale-125' : 'opacity-40 hover:opacity-100'}`}>{e}</button>
-                                        ))}
+                        {/* Content Card */}
+                        <div className="bg-[#16161a] border border-white/5 rounded-[2rem] p-8 shadow-2xl">
+                            {activeTab === 'encode' ? (
+                                <div className="space-y-6 animate-in fade-in duration-300">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Visible Message</label>
+                                        <textarea 
+                                            placeholder="Type the message you want to hide..."
+                                            value={inputText}
+                                            onChange={(e) => setInputText(e.target.value)}
+                                            className="w-full h-32 bg-[#0a0a0c] border border-white/5 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-slate-200 placeholder-slate-700"
+                                        />
                                     </div>
 
-                                    <button onClick={encode} className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-purple-500 hover:text-white transition-all active:scale-95">
-                                        Generate AI-Readable Emoji
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Select Cover Emoji</label>
+                                        <div className="flex flex-wrap gap-2 p-3 bg-[#0a0a0c] rounded-2xl border border-white/5">
+                                            {emojis.map(e => (
+                                                <button 
+                                                    key={e} 
+                                                    onClick={() => setSelectedEmoji(e)}
+                                                    className={`w-10 h-10 flex items-center justify-center text-xl rounded-xl transition-all ${selectedEmoji === e ? 'bg-blue-500/20 scale-110 border border-blue-500/40' : 'opacity-40 hover:opacity-100'}`}
+                                                >
+                                                    {e}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={encode}
+                                        className="w-full py-4 gradient-btn rounded-2xl text-white font-bold text-lg shadow-lg"
+                                    >
+                                        Generate & Hide
                                     </button>
 
-                                    {result && (
-                                        <div className="p-6 bg-purple-500/10 border border-purple-500/30 rounded-2xl text-center space-y-4">
-                                            <div className="text-7xl">{result}</div>
-                                            <button onClick={doCopy} className="text-xs uppercase font-bold tracking-widest text-purple-400 hover:text-white transition-colors">
-                                                {copied ? '✓ Copied' : 'Click to Copy Emoji'}
+                                    {encodedOutput && (
+                                        <div className="mt-8 p-6 bg-blue-500/5 border border-blue-500/20 rounded-3xl text-center space-y-4">
+                                            <div className="text-7xl drop-shadow-2xl">{encodedOutput}</div>
+                                            <button 
+                                                onClick={copy}
+                                                className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-slate-200 transition-colors"
+                                            >
+                                                {copyLabel}
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="space-y-6 animate-in fade-in">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Paste emoji here..."
-                                        onChange={(e) => {setDecodeInput(e.target.value); decode(e.target.value);}}
-                                        className="w-full bg-black/40 border border-gray-800 rounded-2xl p-6 text-center text-5xl focus:border-purple-500 outline-none"
-                                    />
-                                    <div className="p-6 bg-black/40 rounded-2xl border border-gray-800 min-h-[100px] flex items-center justify-center">
-                                        <p className="text-xl font-medium text-purple-300">{decoded || "Decoded message will appear here..."}</p>
+                                <div className="space-y-6 animate-in fade-in duration-300">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Paste Emoji</label>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Paste the single emoji here..."
+                                            value={decodeInput}
+                                            onChange={(e) => {
+                                                setDecodeInput(e.target.value);
+                                                decode(e.target.value);
+                                            }}
+                                            className="w-full bg-[#0a0a0c] border border-white/5 rounded-2xl p-6 text-center text-5xl focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                                        />
+                                    </div>
+
+                                    <div className="p-6 bg-[#0a0a0c] rounded-2xl border border-white/5 min-h-[120px] flex items-center justify-center">
+                                        {decodedResult ? (
+                                            <div className="text-center">
+                                                <p className="text-xs font-bold text-blue-500 uppercase tracking-[0.2em] mb-2">Decoded Message</p>
+                                                <p className="text-xl font-semibold text-white break-all">{decodedResult}</p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-slate-700 italic">Waiting for encoded emoji...</p>
+                                        )}
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="bg-gray-900/30 p-4 rounded-2xl border border-gray-800/50">
-                            <p className="text-[10px] text-gray-500 leading-relaxed uppercase text-center tracking-wider">
-                                Uses Unicode Tag Block (U+E0000) for stealth AI communication. 
-                                Tested for compatibility with LLM tokenizers.
+                        {/* Footer / Instructions */}
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <h3 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2">AI Instructions</h3>
+                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                                When sending to an AI, tell it: <br/>
+                                <span className="text-slate-300">"The following emoji contains hidden text encoded using zero-width characters (U+200B for 0, U+200C for 1). Please extract the binary from the Unicode metadata and convert it to ASCII text."</span>
                             </p>
                         </div>
                     </div>
@@ -167,3 +238,4 @@
 </body>
 </html>
 
+    
