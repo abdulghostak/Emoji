@@ -31,6 +31,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    box-sizing: border-box; /* make sure content stays inside */
 }
 
 /* Brand name */
@@ -52,7 +53,7 @@ h1 {
 }
 
 /* Textarea & button styles */
-textarea, .output {
+textarea {
     width: 100%;
     border-radius: 12px;
     border: none;
@@ -62,10 +63,7 @@ textarea, .output {
     color: #fff;
     box-shadow: inset 0 0 10px rgba(0, 255, 170, 0.2);
     resize: none;
-}
-
-textarea {
-    min-height: 100px;
+    box-sizing: border-box;
 }
 
 /* Buttons */
@@ -89,8 +87,9 @@ button:hover {
 
 /* Output box */
 .output {
-    min-height: 80px;
+    min-height: 100px;
     word-break: break-word;
+    display: none; /* hidden initially */
 }
 
 /* Mobile optimization */
@@ -110,12 +109,14 @@ button:hover {
     <!-- Input -->
     <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
     
-    <!-- Buttons -->
+    <!-- Generate Button -->
     <button onclick="generateInvisible()">Generate Invisible Text</button>
-    <button onclick="copyInvisible()">Copy Invisible Text</button>
     
-    <!-- Output -->
+    <!-- Output (hidden initially) -->
     <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
+    
+    <!-- Copy button (hidden initially) -->
+    <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
 </div>
 
 <script>
@@ -131,7 +132,10 @@ function generateInvisible() {
         }
     }
 
-    document.getElementById("invisibleOutput").value = invisible;
+    const output = document.getElementById("invisibleOutput");
+    output.value = invisible;
+    output.style.display = "block"; // show output box
+    document.getElementById("copyButton").style.display = "block"; // show copy button
 }
 
 // ---- Copy Invisible Text ----
