@@ -219,11 +219,13 @@ function decodeSecret() {
 function copySecret(){ secretOutput.select(); navigator.clipboard.writeText(secretOutput.value); }
 </script>
 
-<!-- ✅ SERVICE WORKER REGISTRATION (ONLY ADDITION) -->
+<!-- ✅ SERVICE WORKER REGISTRATION AND PWA UPDATE -->
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js");
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/Emoji/sw.js')
+      .then(function(reg) { console.log('Service Worker registered.', reg); })
+      .catch(function(err) { console.error('Service Worker registration failed:', err); });
   });
 }
 </script>
