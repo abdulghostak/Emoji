@@ -3,15 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Invisible Text & Secret Language</title>
-
-<!-- ✅ PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-
-<!-- ✅ Theme color for install -->
-<meta name="theme-color" content="#00ffaa">
-
 <style>
 /* General body & layout */
 body {
@@ -97,7 +89,7 @@ button:hover {
 .output {
     min-height: 100px;
     word-break: break-word;
-    display: none;
+    display: none; /* hidden initially */
 }
 
 /* Top buttons container */
@@ -115,82 +107,99 @@ button:hover {
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
+    <!-- Top Secret Language Button -->
     <div class="top-button">
         <button onclick="showSecretLang()">Secret Language</button>
     </div>
 
     <div class="brand">GHOST AK</div>
     <h1>Invisible Text Generator</h1>
-
+    
+    <!-- Input -->
     <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
-
-    <div style="display:flex; justify-content:center;">
+    
+    <!-- Generate Button (Centered) -->
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
         <button onclick="generateInvisible()">Generate Invisible Text</button>
     </div>
-
-    <textarea class="output" id="invisibleOutput" readonly></textarea>
-
-    <div style="display:flex; justify-content:center;">
+    
+    <!-- Output (hidden initially) -->
+    <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
+    
+    <!-- Copy button (hidden initially) -->
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
         <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
     </div>
 </div>
 
 <!-- Secret Language Section -->
 <div class="container" id="secretLangSection" style="display:none;">
-    <button onclick="showInvisiblePage()" style="background:transparent; box-shadow:none; color:#00ffaa;">Back</button>
+    <div style="display:flex; justify-content: flex-start; margin-bottom:10px;">
+        <button onclick="showInvisiblePage()" style="background:transparent; box-shadow:none; color:#00ffaa;">Back</button>
+    </div>
 
     <h1>Secret Language</h1>
-
     <textarea id="secretInput" placeholder="Enter message to encode..."></textarea>
-
-    <div style="display:flex; justify-content:center;">
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
         <button onclick="encodeSecret()">Encode Message</button>
     </div>
 
-    <textarea class="output" id="secretOutput" readonly></textarea>
-
-    <div style="display:flex; justify-content:center;">
+    <!-- Encoded Output -->
+    <textarea class="output" id="secretOutput" readonly placeholder="Encoded message will appear here..."></textarea>
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
         <button id="copySecret" onclick="copySecret()" style="display:none;">Copy Encoded Message</button>
     </div>
 
     <textarea id="decodeInput" placeholder="Paste encoded message here..."></textarea>
-
-    <div style="display:flex; justify-content:center;">
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
         <button onclick="decodeSecret()">Decode Message</button>
+    </div>
+
+    <!-- Decoded Output -->
+    <div id="decodedResult" style="display:none;"></div>
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
+        <button id="copyDecoded" onclick="copyDecoded()" style="display:none;">Copy Decoded Message</button>
     </div>
 </div>
 
 <script>
-/* === YOUR EXISTING JS (UNCHANGED) === */
+// ---- Invisible Text ----
 function generateInvisible() {
     const text = document.getElementById("invisibleText").value;
     let invisible = '';
     for (let i = 0; i < text.length; i++) {
         const binary = text.charCodeAt(i).toString(2).padStart(16,'0');
-        for (let b of binary) invisible += b === '0' ? '\u200B' : '\u200C';
+        for (let b = 0; b < binary.length; b++) {
+            invisible += binary[b] === '0' ? '\u200B' : '\u200C';
+        }
     }
-    invisibleOutput.value = invisible;
-    invisibleOutput.style.display = "block";
-    copyButton.style.display = "block";
+    const output = document.getElementById("invisibleOutput");
+    output.value = invisible;
+    output.style.display = "block";
+    document.getElementById("copyButton").style.display = "block";
 }
 function copyInvisible() {
-    invisibleOutput.select();
-    navigator.clipboard.writeText(invisibleOutput.value);
+    const output = document.getElementById("invisibleOutput");
+    output.select();
+    output.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(output.value);
+    alert("Invisible text copied!");
 }
 
+// ---- Secret Language Section ----
 function showSecretLang() {
     document.querySelector('.container').style.display = 'none';
-    secretLangSection.style.display = 'flex';
+    document.getElementById('secretLangSection').style.display = 'flex';
 }
 function showInvisiblePage() {
     document.querySelector('.container').style.display = 'flex';
-    secretLangSection.style.display = 'none';
+    document.getElementById('secretLangSection').style.display = 'none';
 }
 
+// Secret Language Mapping
 const secretMap = {
     'A':'%7','B':'>#4','C':'[)5','D':'":3','E':';\\2','F':'{(9','G':'~&6','H':']@4','I':'>!5',
     'J':'?^1','K':'!/8','L':'&@6','M':'_>1','N':',?0','O':'<*3','P':'^=2','Q':')#9','R':'{%7',
@@ -198,37 +207,60 @@ const secretMap = {
 };
 
 function encodeSecret() {
-    let encoded='';
-    for(let c of secretInput.value.toUpperCase()) encoded += secretMap[c]||c;
-    secretOutput.value=encoded;
-    secretOutput.style.display='block';
-    copySecret.style.display='block';
-}
-function decodeSecret() {
-    let temp=decodeInput.value, decoded='';
-    while(temp.length){
-        let found=false;
-        for(let k in secretMap){
-            let v=secretMap[k];
-            if(temp.startsWith(v)){ decoded+=k; temp=temp.slice(v.length); found=true; break; }
-        }
-        if(!found){ decoded+=temp[0]; temp=temp.slice(1); }
+    const text = document.getElementById("secretInput").value.toUpperCase();
+    let encoded = '';
+    for(let i=0;i<text.length;i++){
+        encoded += secretMap[text[i]] || text[i];
     }
-    alert("Decoded Message:\n\n"+decoded);
+    const output = document.getElementById("secretOutput");
+    output.value = encoded;
+    output.style.display="block";
+    document.getElementById("copySecret").style.display="block";
 }
-function copySecret(){ secretOutput.select(); navigator.clipboard.writeText(secretOutput.value); }
-</script>
 
-<!-- ✅ SERVICE WORKER REGISTRATION AND PWA UPDATE -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/Emoji/sw.js')
-      .then(function(reg) { console.log('Service Worker registered.', reg); })
-      .catch(function(err) { console.error('Service Worker registration failed:', err); });
-  });
+function decodeSecret() {
+    let encoded = document.getElementById("decodeInput").value;
+    let decoded = '';
+    const mapEntries = Object.entries(secretMap);
+    let temp = encoded;
+    while(temp.length>0){
+        let matched=false;
+        for(let [key,val] of mapEntries){
+            if(temp.startsWith(val)){
+                decoded += key;
+                temp=temp.slice(val.length);
+                matched=true;
+                break;
+            }
+        }
+        if(!matched){
+            decoded += temp[0];
+            temp=temp.slice(1);
+        }
+    }
+    alert("Decoded Message: " + decoded);
+    document.getElementById("decodedResult").style.display="block";
+    document.getElementById("copyDecoded").style.display="block";
+    document.getElementById("decodedResult").innerText = decoded;
+}
+
+function copySecret() {
+    const output = document.getElementById("secretOutput");
+    output.select();
+    navigator.clipboard.writeText(output.value);
+    alert("Encoded message copied!");
+}
+
+function copyDecoded() {
+    const output = document.getElementById("decodedResult");
+    const range = document.createRange();
+    range.selectNode(output);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    navigator.clipboard.writeText(output.innerText);
+    alert("Decoded message copied!");
 }
 </script>
 
 </body>
-    </html>
+</html>
