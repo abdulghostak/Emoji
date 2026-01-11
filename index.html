@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ghost AK App</title>
 <style>
+/* General body & layout */
 body {
     margin: 0;
     padding: 0;
@@ -18,6 +19,7 @@ body {
     min-height: 100vh;
 }
 
+/* Container card */
 .container {
     background: rgba(30,30,30,0.95);
     padding: 25px 20px;
@@ -29,28 +31,25 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    box-sizing: border-box;
+    box-sizing: border-box; 
+    position: relative;
 }
 
-/* Top Secret Lang button */
+/* Secret language button at top */
 #secretLangBtn {
     align-self: center;
-    padding: 12px 25px;
-    font-size: 16px;
-    font-weight: bold;
+    padding: 10px 20px;
+    font-size: 14px;
     border-radius: 12px;
     border: none;
-    background: linear-gradient(135deg, #ff66cc, #ff3399);
+    font-weight: bold;
+    background: linear-gradient(135deg, #ffcc00, #ffaa00);
     color: #111;
     cursor: pointer;
-    box-shadow: 0 5px 20px rgba(255, 102, 204, 0.4);
-    transition: all 0.3s ease;
-}
-#secretLangBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 102, 204, 0.6);
+    box-shadow: 0 3px 15px rgba(255, 204, 0, 0.4);
 }
 
+/* Brand name */
 .brand {
     text-align: center;
     font-size: 2em;
@@ -60,7 +59,7 @@ body {
     letter-spacing: 3px;
 }
 
-/* Headings */
+/* Heading */
 h1 {
     text-align: center;
     margin: 0 0 10px 0;
@@ -68,7 +67,7 @@ h1 {
     color: #00ffaa;
 }
 
-/* Textareas */
+/* Textarea & button styles */
 textarea {
     width: 100%;
     border-radius: 12px;
@@ -89,36 +88,28 @@ button {
     border: none;
     font-size: 18px;
     font-weight: bold;
+    background: linear-gradient(135deg, #00ffaa, #00dd88);
+    color: #111;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
 }
 
-.copy-btn {
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
+}
+
+/* Output box */
+.output {
+    min-height: 100px;
+    word-break: break-word;
+    display: none; 
+}
+
+/* Hide secret language page initially */
+#secretLangSection {
     display: none;
-    margin-top: 10px;
-    background: linear-gradient(135deg, #00ffaa, #00dd88);
-    color: #111;
-    box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
-}
-.copy-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
-}
-
-/* Generate buttons */
-.generate-btn {
-    background: linear-gradient(135deg, #00ffaa, #00dd88);
-    color: #111;
-    box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
-}
-.generate-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
-}
-
-/* Hidden sections */
-.section {
-    display: flex;
     flex-direction: column;
     gap: 15px;
 }
@@ -128,44 +119,52 @@ button {
     .brand { font-size: 1.7em; }
     h1 { font-size: 1.4em; }
     button { font-size: 16px; padding: 12px; }
+    #secretLangBtn { font-size: 12px; padding: 8px 15px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
 
-    <!-- Secret Language button at the top -->
-    <button id="secretLangBtn" onclick="showSecretLang()">SECRET LANG</button>
+<div class="container">
+    <!-- Secret language button -->
+    <button id="secretLangBtn" onclick="showSecretLang()">Secret Language</button>
 
     <!-- Brand -->
     <div class="brand">GHOST AK</div>
-
-    <!-- Invisible Text Section -->
-    <div id="invisibleSection" class="section">
+    
+    <!-- Invisible text section -->
+    <div id="invisibleSection">
         <h1>Invisible Text Generator</h1>
         <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
-        <button class="generate-btn" onclick="generateInvisible()">Generate Invisible Text</button>
+        <button onclick="generateInvisible()">Generate Invisible Text</button>
         <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
-        <button id="copyButton" class="copy-btn" onclick="copyInvisible()">Copy Invisible Text</button>
+        <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
     </div>
 
-    <!-- Secret Language Section -->
-    <div id="secretSection" class="section" style="display:none;">
-        <h1>Secret Language</h1>
-        <textarea id="secretInput" placeholder="Enter message to convert to secret language..."></textarea>
-        <button class="generate-btn" onclick="encodeSecret()">Encode Secret</button>
-        <textarea id="secretOutput" readonly placeholder="Encoded message will appear here..."></textarea>
-        <button id="secretCopy" class="copy-btn" onclick="copySecret()">Copy Secret Message</button>
+    <!-- Secret language section -->
+    <div id="secretLangSection">
+        <h1>Secret Language Encoder/Decoder</h1>
+        <!-- Encode -->
+        <textarea id="secretInput" placeholder="Type text to encode..."></textarea>
+        <button onclick="encodeSecret()">Convert to Secret Language</button>
+        <textarea class="output" id="secretOutput" readonly placeholder="Encoded secret text will appear here..."></textarea>
+        <button id="copySecret" onclick="copySecret()" style="display:none;">Copy Secret Text</button>
 
-        <textarea id="decodeInput" placeholder="Paste secret message here to decode..."></textarea>
-        <button class="generate-btn" onclick="decodeSecret()">Decode Secret</button>
-        <textarea id="decodeOutput" readonly placeholder="Decoded message will appear here..."></textarea>
-        <button id="decodeCopy" class="copy-btn" onclick="copyDecoded()">Copy Decoded Message</button>
+        <!-- Decode -->
+        <textarea id="decodeInput" placeholder="Paste secret text here to decode..."></textarea>
+        <button onclick="decodeSecret()">Decode Secret Language</button>
+        <textarea class="output" id="decodedOutput" readonly placeholder="Decoded plain English text will appear here..."></textarea>
     </div>
 </div>
 
 <script>
-// ---- Invisible Text ----
+// ---- Switch to secret language page ----
+function showSecretLang() {
+    document.getElementById("invisibleSection").style.display = "none";
+    document.getElementById("secretLangSection").style.display = "flex";
+}
+
+// ---- Invisible Text Generator ----
 function generateInvisible() {
     const text = document.getElementById("invisibleText").value;
     let invisible = '';
@@ -181,6 +180,7 @@ function generateInvisible() {
     document.getElementById("copyButton").style.display = "block";
 }
 
+// ---- Copy Invisible Text ----
 function copyInvisible() {
     const output = document.getElementById("invisibleOutput");
     output.select();
@@ -189,74 +189,41 @@ function copyInvisible() {
     alert("Invisible text copied!");
 }
 
-// ---- Secret Language Visibility ----
-function showSecretLang() {
-    document.getElementById("invisibleSection").style.display = "none";
-    document.getElementById("secretSection").style.display = "flex";
-}
-
-// ---- Secret Language Encoding ----
-const secretMap = {
-    'a':'🌑','b':'🌒','c':'🌓','d':'🌔','e':'🌕','f':'🌖','g':'🌗','h':'🌘',
-    'i':'🌙','j':'☀️','k':'⭐','l':'🌟','m':'✨','n':'⚡','o':'🔥','p':'💧',
-    'q':'🌊','r':'🍀','s':'🌸','t':'🍁','u':'🌹','v':'🍄','w':'🌵','x':'🌴',
-    'y':'🎄','z':'🌲',' ':'　','0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9'
-};
-
+// ---- Secret Language Encoder ----
+// Simple reversible encoding using a character shift
 function encodeSecret() {
-    const input = document.getElementById("secretInput").value.toLowerCase();
+    const text = document.getElementById("secretInput").value;
     let encoded = '';
-    for(let i=0;i<input.length;i++){
-        const char = input[i];
-        encoded += secretMap[char] || char;
+    for (let i = 0; i < text.length; i++) {
+        encoded += String.fromCharCode(text.charCodeAt(i) + 3); // shift +3
     }
-    document.getElementById("secretOutput").value = encoded;
-    document.getElementById("secretCopy").style.display = "block";
+    const output = document.getElementById("secretOutput");
+    output.value = encoded;
+    output.style.display = "block";
+    document.getElementById("copySecret").style.display = "block";
 }
 
+// ---- Copy Secret Text ----
 function copySecret() {
     const output = document.getElementById("secretOutput");
     output.select();
-    output.setSelectionRange(0,99999);
+    output.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(output.value);
-    alert("Secret message copied!");
+    alert("Secret text copied!");
 }
 
-// ---- Secret Language Decoding ----
+// ---- Secret Language Decoder ----
 function decodeSecret() {
-    const input = document.getElementById("decodeInput").value;
+    const text = document.getElementById("decodeInput").value;
     let decoded = '';
-    const revMap = {};
-    for (let key in secretMap) revMap[secretMap[key]] = key;
-
-    let i = 0;
-    while (i < input.length) {
-        let found = false;
-        for (let len = 2; len <= 3; len++) { // emoji length in chars
-            const slice = input.slice(i, i+len);
-            if(revMap[slice]) {
-                decoded += revMap[slice];
-                i += len;
-                found = true;
-                break;
-            }
-        }
-        if(!found){
-            decoded += input[i];
-            i++;
-        }
+    for (let i = 0; i < text.length; i++) {
+        decoded += String.fromCharCode(text.charCodeAt(i) - 3); // reverse shift
     }
-    document.getElementById("decodeOutput").value = decoded;
-    document.getElementById("decodeCopy").style.display = "block";
-}
-
-function copyDecoded() {
-    const output = document.getElementById("decodeOutput");
-    output.select();
-    output.setSelectionRange(0,99999);
-    navigator.clipboard.writeText(output.value);
-    alert("Decoded message copied!");
+    const output = document.getElementById("decodedOutput");
+    output.value = decoded; // plain English text only
+    output.style.display = "block";
 }
 </script>
+
 </body>
-</html>
+    </html>
