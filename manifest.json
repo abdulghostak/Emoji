@@ -1,7 +1,7 @@
 {
   "name": "Incode",
   "short_name": "Ghost AK",
-  "start_url": "/Emoji/",
+  "start_url": "/Emoji/index.html",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#00ffaa",
