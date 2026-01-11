@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ghost AK - Invisible & Secret Language</title>
+<title>Invisible Text & Secret Language</title>
 <style>
+/* General body & layout */
 body {
     margin: 0;
     padding: 0;
@@ -18,6 +19,7 @@ body {
     min-height: 100vh;
 }
 
+/* Container card */
 .container {
     background: rgba(30,30,30,0.95);
     padding: 25px 20px;
@@ -32,6 +34,7 @@ body {
     box-sizing: border-box;
 }
 
+/* Brand name */
 .brand {
     text-align: center;
     font-size: 2em;
@@ -41,6 +44,29 @@ body {
     letter-spacing: 3px;
 }
 
+/* Heading */
+h1 {
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 1.6em;
+    color: #00ffaa;
+}
+
+/* Textarea & button styles */
+textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    padding: 15px;
+    background: #111;
+    color: #fff;
+    box-shadow: inset 0 0 10px rgba(0, 255, 170, 0.2);
+    resize: none;
+    box-sizing: border-box;
+}
+
+/* Buttons */
 button {
     padding: 15px;
     border-radius: 12px;
@@ -59,49 +85,24 @@ button:hover {
     box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
 }
 
-textarea {
-    width: 100%;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    padding: 15px;
-    background: #111;
-    color: #fff;
-    box-shadow: inset 0 0 10px rgba(0, 255, 170, 0.2);
-    resize: none;
-    box-sizing: border-box;
-}
-
+/* Output box */
 .output {
     min-height: 100px;
     word-break: break-word;
-    display: none;
+    display: none; /* hidden initially */
 }
 
-.secret-section {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#secretLangBtn {
-    align-self: center;
+/* Top buttons container */
+.top-button {
+    display: flex;
+    justify-content: center;
     margin-bottom: 10px;
 }
 
-#backBtn {
-    display: none;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 8px 12px;
-    font-size: 14px;
-    background: rgba(0, 255, 170, 0.3);
-    color: #111;
-}
-
+/* Mobile optimization */
 @media (max-width: 500px) {
     .brand { font-size: 1.7em; }
+    h1 { font-size: 1.4em; }
     button { font-size: 16px; padding: 12px; }
 }
 </style>
@@ -109,36 +110,59 @@ textarea {
 <body>
 
 <div class="container">
+    <!-- Top Secret Language Button -->
+    <div class="top-button">
+        <button onclick="showSecretLang()">Secret Language</button>
+    </div>
 
-    <!-- Secret Language Button (Top Center) -->
-    <button id="secretLangBtn" onclick="showSecretLang()">Secret Language</button>
-    <!-- Back Button -->
-    <button id="backBtn" onclick="backToInvisible()">Back</button>
-
-    <!-- Brand -->
     <div class="brand">GHOST AK</div>
+    <h1>Invisible Text Generator</h1>
+    
+    <!-- Input -->
+    <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
+    
+    <!-- Generate Button (Centered) -->
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
+        <button onclick="generateInvisible()">Generate Invisible Text</button>
+    </div>
+    
+    <!-- Output (hidden initially) -->
+    <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
+    
+    <!-- Copy button (hidden initially) -->
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
+        <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
+    </div>
+</div>
 
-    <!-- Invisible Text Page -->
-    <div id="invisiblePage">
-        <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
-        <button onclick="generateInvisible()" style="align-self:center;">Generate Invisible Text</button>
-        <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
-        <button id="copyButton" onclick="copyInvisible()" style="display:none; align-self:center;">Copy Invisible Text</button>
+<!-- Secret Language Section -->
+<div class="container" id="secretLangSection" style="display:none;">
+    <div style="display:flex; justify-content: flex-start; margin-bottom:10px;">
+        <button onclick="showInvisiblePage()" style="background:transparent; box-shadow:none; color:#00ffaa;">Back</button>
     </div>
 
-    <!-- Secret Language Page -->
-    <div id="secretPage" class="secret-section">
-        <textarea id="secretInput" placeholder="Type your text to encode in secret language..."></textarea>
-        <button onclick="encodeSecret()" style="align-self:center;">Encode Secret Language</button>
-        <textarea id="secretEncoded" readonly placeholder="Encoded secret language will appear here..." style="display:none;"></textarea>
-        <button id="copySecretBtn" onclick="copySecret()" style="display:none; align-self:center;">Copy Encoded</button>
-
-        <textarea id="secretDecodeInput" placeholder="Paste encoded secret language here to decode..."></textarea>
-        <button onclick="decodeSecret()" style="align-self:center;">Decode Secret Language</button>
-        <textarea id="decodedMessage" readonly placeholder="Decoded message in English will appear here..." style="display:none; margin-top:10px;"></textarea>
-        <button id="copyDecodedBtn" onclick="copyDecoded()" style="display:none; align-self:center;">Copy Decoded Message</button>
+    <h1>Secret Language</h1>
+    <textarea id="secretInput" placeholder="Enter message to encode..."></textarea>
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
+        <button onclick="encodeSecret()">Encode Message</button>
     </div>
 
+    <!-- Encoded Output -->
+    <textarea class="output" id="secretOutput" readonly placeholder="Encoded message will appear here..."></textarea>
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
+        <button id="copySecret" onclick="copySecret()" style="display:none;">Copy Encoded Message</button>
+    </div>
+
+    <textarea id="decodeInput" placeholder="Paste encoded message here..."></textarea>
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
+        <button onclick="decodeSecret()">Decode Message</button>
+    </div>
+
+    <!-- Decoded Output -->
+    <div id="decodedResult" style="display:none;"></div>
+    <div style="display: flex; justify-content: center; margin-top: 5px;">
+        <button id="copyDecoded" onclick="copyDecoded()" style="display:none;">Copy Decoded Message</button>
+    </div>
 </div>
 
 <script>
@@ -157,7 +181,6 @@ function generateInvisible() {
     output.style.display = "block";
     document.getElementById("copyButton").style.display = "block";
 }
-
 function copyInvisible() {
     const output = document.getElementById("invisibleOutput");
     output.select();
@@ -166,83 +189,78 @@ function copyInvisible() {
     alert("Invisible text copied!");
 }
 
-// ---- Secret Language ----
+// ---- Secret Language Section ----
+function showSecretLang() {
+    document.querySelector('.container').style.display = 'none';
+    document.getElementById('secretLangSection').style.display = 'flex';
+}
+function showInvisiblePage() {
+    document.querySelector('.container').style.display = 'flex';
+    document.getElementById('secretLangSection').style.display = 'none';
+}
+
+// Secret Language Mapping
 const secretMap = {
-    "A":"%7","B":">#4","C":"[)5","D":"\":3","E":";\\2","F":"{(9","G":"~&6",
-    "H":"]@4","I":">!5","J":"?^1","K":"!/8","L":"&@6","M":"_>1","N":",?0",
-    "O":"<*3","P":"^=2","Q":")#9","R":"{%7","S":"*<0","T":"+~2","U":"]{9",
-    "V":"|:4","W":".\"7","X":"/-5","Y":"+8","Z":"!_1"," ":"::"
+    'A':'%7','B':'>#4','C':'[)5','D':'":3','E':';\\2','F':'{(9','G':'~&6','H':']@4','I':'>!5',
+    'J':'?^1','K':'!/8','L':'&@6','M':'_>1','N':',?0','O':'<*3','P':'^=2','Q':')#9','R':'{%7',
+    'S':'*<0','T':'+~2','U':']{9','V':'|:4','W':'.\"7','X':'/-5','Y':'+8','Z':'!_1',' ':'::'
 };
-const reverseMap = Object.fromEntries(Object.entries(secretMap).map(([k,v])=>[v,k]));
 
 function encodeSecret() {
     const text = document.getElementById("secretInput").value.toUpperCase();
     let encoded = '';
     for(let i=0;i<text.length;i++){
-        const c = text[i];
-        encoded += secretMap[c] || c;
+        encoded += secretMap[text[i]] || text[i];
     }
-    const encodedBox = document.getElementById("secretEncoded");
-    encodedBox.value = encoded;
-    encodedBox.style.display = "block";
-    document.getElementById("copySecretBtn").style.display = "block";
+    const output = document.getElementById("secretOutput");
+    output.value = encoded;
+    output.style.display="block";
+    document.getElementById("copySecret").style.display="block";
 }
 
 function decodeSecret() {
-    const input = document.getElementById("secretDecodeInput").value;
+    let encoded = document.getElementById("decodeInput").value;
     let decoded = '';
-    let i=0;
-    while(i<input.length){
-        let found=false;
-        for(let len=4;len>0;len--){
-            const sub = input.substr(i,len);
-            if(reverseMap[sub]){
-                decoded += reverseMap[sub];
-                i+=len;
-                found=true;
+    const mapEntries = Object.entries(secretMap);
+    let temp = encoded;
+    while(temp.length>0){
+        let matched=false;
+        for(let [key,val] of mapEntries){
+            if(temp.startsWith(val)){
+                decoded += key;
+                temp=temp.slice(val.length);
+                matched=true;
                 break;
             }
         }
-        if(!found){
-            decoded += input[i];
-            i++;
+        if(!matched){
+            decoded += temp[0];
+            temp=temp.slice(1);
         }
     }
-    const decodedBox = document.getElementById("decodedMessage");
-    decodedBox.value = decoded;
-    decodedBox.style.display = "block";
-    document.getElementById("copyDecodedBtn").style.display = "block";
+    alert("Decoded Message: " + decoded);
+    document.getElementById("decodedResult").style.display="block";
+    document.getElementById("copyDecoded").style.display="block";
+    document.getElementById("decodedResult").innerText = decoded;
 }
 
-function copySecret(){
-    const box = document.getElementById("secretEncoded");
-    box.select();
-    box.setSelectionRange(0,99999);
-    navigator.clipboard.writeText(box.value);
-    alert("Encoded secret language copied!");
+function copySecret() {
+    const output = document.getElementById("secretOutput");
+    output.select();
+    navigator.clipboard.writeText(output.value);
+    alert("Encoded message copied!");
 }
 
-function copyDecoded(){
-    const box = document.getElementById("decodedMessage");
-    box.select();
-    box.setSelectionRange(0,99999);
-    navigator.clipboard.writeText(box.value);
+function copyDecoded() {
+    const output = document.getElementById("decodedResult");
+    const range = document.createRange();
+    range.selectNode(output);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    navigator.clipboard.writeText(output.innerText);
     alert("Decoded message copied!");
-}
-
-// ---- Page Switch ----
-function showSecretLang(){
-    document.getElementById("invisiblePage").style.display="none";
-    document.getElementById("secretPage").style.display="flex";
-    document.getElementById("backBtn").style.display="block";
-}
-
-function backToInvisible(){
-    document.getElementById("secretPage").style.display="none";
-    document.getElementById("invisiblePage").style.display="flex";
-    document.getElementById("backBtn").style.display="none";
 }
 </script>
 
 </body>
-    </html>
+            </html>
