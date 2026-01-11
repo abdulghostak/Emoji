@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ghost AK - Invisible & Emoji Text</title>
+<title>Ghost AK - Invisible Text Generator</title>
 <style>
 body {
     margin: 0;
@@ -48,7 +48,6 @@ h1 {
     color: #00ffaa;
 }
 
-/* Text areas and buttons */
 textarea {
     width: 100%;
     border-radius: 12px;
@@ -86,27 +85,6 @@ button:hover {
     display: none;
 }
 
-.section-title {
-    margin-top: 20px;
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #00ffaa;
-    text-align: center;
-}
-
-.emoji-selector {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-}
-
-.emoji-selector button {
-    font-size: 24px;
-    padding: 10px 15px;
-}
-
-/* Mobile optimization */
 @media (max-width: 500px) {
     .brand { font-size: 1.7em; }
     h1 { font-size: 1.4em; }
@@ -118,39 +96,23 @@ button:hover {
 
 <div class="container">
     <div class="brand">GHOST AK</div>
-    
-    <!-- Invisible Text Section -->
     <h1>Invisible Text Generator</h1>
+    
+    <!-- Input -->
     <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
+    
+    <!-- Generate Button -->
     <button onclick="generateInvisible()">Generate Invisible Text</button>
+    
+    <!-- Output (hidden initially) -->
     <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
-    <button id="copyInvisibleBtn" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
     
-    <!-- Emoji Encoding Section -->
-    <div class="section-title">Emoji Text Encoder / Decoder</div>
-    
-    <!-- Emoji selection -->
-    <div class="emoji-selector">
-        <button onclick="selectEmoji('😀')">😀</button>
-        <button onclick="selectEmoji('🚀')">🚀</button>
-        <button onclick="selectEmoji('❤️')">❤️</button>
-        <button onclick="selectEmoji('🌟')">🌟</button>
-    </div>
-    
-    <!-- Input text for emoji encoding -->
-    <textarea id="emojiText" placeholder="Enter text to hide inside emoji..."></textarea>
-    <button onclick="encodeEmoji()">Generate Emoji Text</button>
-    <textarea class="output" id="emojiOutput" readonly placeholder="Your emoji text will appear here..."></textarea>
-    <button id="copyEmojiBtn" onclick="copyEmoji()" style="display:none;">Copy Emoji Text</button>
-    
-    <!-- Decode section -->
-    <textarea id="emojiInputDecode" placeholder="Paste emoji text here to decode..."></textarea>
-    <button onclick="decodeEmoji()">Decode Emoji Text</button>
-    <textarea class="output" id="emojiDecoded" readonly placeholder="Decoded text will appear here..."></textarea>
+    <!-- Copy button (hidden initially) -->
+    <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
 </div>
 
 <script>
-// ---- Invisible Text ----
+// ---- Generate Invisible Text ----
 function generateInvisible() {
     const text = document.getElementById("invisibleText").value;
     let invisible = '';
@@ -162,10 +124,11 @@ function generateInvisible() {
     }
     const output = document.getElementById("invisibleOutput");
     output.value = invisible;
-    output.style.display = "block";
-    document.getElementById("copyInvisibleBtn").style.display = "block";
+    output.style.display = "block"; // show output box
+    document.getElementById("copyButton").style.display = "block"; // show copy button
 }
 
+// ---- Copy Invisible Text ----
 function copyInvisible() {
     const output = document.getElementById("invisibleOutput");
     output.select();
@@ -173,54 +136,7 @@ function copyInvisible() {
     navigator.clipboard.writeText(output.value);
     alert("Invisible text copied!");
 }
-
-// ---- Emoji Encoding ----
-let selectedEmoji = '😀';
-function selectEmoji(e) {
-    selectedEmoji = e;
-}
-
-function encodeEmoji() {
-    const text = document.getElementById("emojiText").value;
-    let binaryStr = '';
-    for (let i = 0; i < text.length; i++) {
-        binaryStr += text.charCodeAt(i).toString(2).padStart(8,'0');
-    }
-    let emojiText = '';
-    for (let i = 0; i < binaryStr.length; i++) {
-        emojiText += binaryStr[i] === '0' ? selectedEmoji : selectedEmoji;
-    }
-    const output = document.getElementById("emojiOutput");
-    output.value = emojiText;
-    output.style.display = "block";
-    document.getElementById("copyEmojiBtn").style.display = "block";
-}
-
-function copyEmoji() {
-    const output = document.getElementById("emojiOutput");
-    output.select();
-    output.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(output.value);
-    alert("Emoji text copied!");
-}
-
-function decodeEmoji() {
-    const emojiInput = document.getElementById("emojiInputDecode").value;
-    let binaryStr = '';
-    for (let i = 0; i < emojiInput.length; i++) {
-        // Since both 0 and 1 are same emoji here, just ignore difference
-        binaryStr += '0';
-    }
-    let decoded = '';
-    for (let i = 0; i < binaryStr.length; i+=8) {
-        const byte = binaryStr.substr(i,8);
-        if(byte.length === 8) decoded += String.fromCharCode(parseInt(byte,2));
-    }
-    const output = document.getElementById("emojiDecoded");
-    output.value = decoded;
-    output.style.display = "block";
-}
 </script>
 
 </body>
-</html>
+    </html>
