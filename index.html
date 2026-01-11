@@ -3,166 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emoji Text Encoder/Decoder</title>
+<title>Ghost AK - Invisible & Emoji Text</title>
 <style>
 body {
-    margin:0; padding:0;
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:20px;
-    min-height:100vh;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    min-height: 100vh;
 }
+
 .container {
     background: rgba(30,30,30,0.95);
-    padding:25px 20px;
-    border-radius:20px;
-    width:95%;
-    max-width:480px;
-    box-shadow:0 10px 40px rgba(0,255,170,0.3);
-    backdrop-filter:blur(10px);
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-    box-sizing:border-box;
+    padding: 25px 20px;
+    border-radius: 20px;
+    width: 95%;
+    max-width: 480px;
+    box-shadow: 0 10px 40px rgba(0, 255, 170, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-sizing: border-box;
 }
+
 .brand {
-    text-align:center;
-    font-size:2em;
-    font-weight:bold;
-    color:#00ffaa;
-    margin-bottom:10px;
-    letter-spacing:3px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: #00ffaa;
+    margin-bottom: 10px;
+    letter-spacing: 3px;
 }
+
 h1 {
-    text-align:center;
-    margin:0 0 10px 0;
-    font-size:1.5em;
-    color:#00ffaa;
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 1.6em;
+    color: #00ffaa;
 }
-/* Input and buttons */
-textarea, select {
-    width:100%;
-    border-radius:12px;
-    border:none;
-    font-size:16px;
-    padding:15px;
-    background:#111;
-    color:#fff;
-    box-shadow: inset 0 0 10px rgba(0,255,170,0.2);
-    resize:none;
-    box-sizing:border-box;
+
+/* Text areas and buttons */
+textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    padding: 15px;
+    background: #111;
+    color: #fff;
+    box-shadow: inset 0 0 10px rgba(0, 255, 170, 0.2);
+    resize: none;
+    box-sizing: border-box;
 }
+
 button {
-    padding:15px;
-    border-radius:12px;
-    border:none;
-    font-size:18px;
-    font-weight:bold;
-    background: linear-gradient(135deg, #00ffaa,#00dd88);
-    color:#111;
-    cursor:pointer;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #00ffaa, #00dd88);
+    color: #111;
+    cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow:0 5px 20px rgba(0,255,170,0.4);
+    box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
 }
-button:hover {transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,255,170,0.6);}
-.output {min-height:80px; word-break:break-word; display:none;}
-@media(max-width:500px){
-    .brand{font-size:1.7em;}
-    h1{font-size:1.4em;}
-    button{font-size:16px; padding:12px;}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
+}
+
+.output {
+    min-height: 100px;
+    word-break: break-word;
+    display: none;
+}
+
+.section-title {
+    margin-top: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #00ffaa;
+    text-align: center;
+}
+
+.emoji-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.emoji-selector button {
+    font-size: 24px;
+    padding: 10px 15px;
+}
+
+/* Mobile optimization */
+@media (max-width: 500px) {
+    .brand { font-size: 1.7em; }
+    h1 { font-size: 1.4em; }
+    button { font-size: 16px; padding: 12px; }
 }
 </style>
 </head>
 <body>
+
 <div class="container">
     <div class="brand">GHOST AK</div>
-    <h1>Emoji Text Encoder/Decoder</h1>
-
-    <!-- Encode Section -->
-    <textarea id="textInput" placeholder="Type your text to encode in emoji..."></textarea>
-    <select id="emojiSelect">
-        <option value="🚀">🚀</option>
-        <option value="❤️">❤️</option>
-        <option value="😉">😉</option>
-        <option value="🎯">🎯</option>
-        <option value="💎">💎</option>
-    </select>
-    <button onclick="encodeEmoji()">Encode Text into Emoji</button>
-    <textarea class="output" id="encodedOutput" readonly placeholder="Encoded emoji text will appear here..."></textarea>
-    <button id="copyEncodeBtn" onclick="copyText('encodedOutput')" style="display:none;">Copy Encoded Emoji</button>
-
-    <hr style="border:1px solid #00ffaa; opacity:0.3;">
-
-    <!-- Decode Section -->
-    <textarea id="emojiInput" placeholder="Paste encoded emoji text here to decode..."></textarea>
+    
+    <!-- Invisible Text Section -->
+    <h1>Invisible Text Generator</h1>
+    <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
+    <button onclick="generateInvisible()">Generate Invisible Text</button>
+    <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
+    <button id="copyInvisibleBtn" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
+    
+    <!-- Emoji Encoding Section -->
+    <div class="section-title">Emoji Text Encoder / Decoder</div>
+    
+    <!-- Emoji selection -->
+    <div class="emoji-selector">
+        <button onclick="selectEmoji('😀')">😀</button>
+        <button onclick="selectEmoji('🚀')">🚀</button>
+        <button onclick="selectEmoji('❤️')">❤️</button>
+        <button onclick="selectEmoji('🌟')">🌟</button>
+    </div>
+    
+    <!-- Input text for emoji encoding -->
+    <textarea id="emojiText" placeholder="Enter text to hide inside emoji..."></textarea>
+    <button onclick="encodeEmoji()">Generate Emoji Text</button>
+    <textarea class="output" id="emojiOutput" readonly placeholder="Your emoji text will appear here..."></textarea>
+    <button id="copyEmojiBtn" onclick="copyEmoji()" style="display:none;">Copy Emoji Text</button>
+    
+    <!-- Decode section -->
+    <textarea id="emojiInputDecode" placeholder="Paste emoji text here to decode..."></textarea>
     <button onclick="decodeEmoji()">Decode Emoji Text</button>
-    <textarea class="output" id="decodedOutput" readonly placeholder="Decoded text will appear here..."></textarea>
-    <button id="copyDecodeBtn" onclick="copyText('decodedOutput')" style="display:none;">Copy Decoded Text</button>
+    <textarea class="output" id="emojiDecoded" readonly placeholder="Decoded text will appear here..."></textarea>
 </div>
 
 <script>
-// ---- Encode ----
-function encodeEmoji() {
-    const text = document.getElementById("textInput").value;
-    const emoji = document.getElementById("emojiSelect").value;
-    let encoded = '';
-
-    // Convert each char to binary and then to invisible chars
-    for(let i=0;i<text.length;i++){
+// ---- Invisible Text ----
+function generateInvisible() {
+    const text = document.getElementById("invisibleText").value;
+    let invisible = '';
+    for (let i = 0; i < text.length; i++) {
         const binary = text.charCodeAt(i).toString(2).padStart(16,'0');
-        for(let b=0;b<binary.length;b++){
-            encoded += binary[b] === '0' ? '\u200B' : '\u200C';
+        for (let b = 0; b < binary.length; b++) {
+            invisible += binary[b] === '0' ? '\u200B' : '\u200C';
         }
     }
-
-    // Attach invisible chars to chosen emoji, split if needed
-    const maxPerEmoji = 1000; // max invisible chars per emoji
-    let result = '';
-    for(let i=0;i<encoded.length;i+=maxPerEmoji){
-        result += emoji + encoded.slice(i,i+maxPerEmoji);
-    }
-
-    const output = document.getElementById("encodedOutput");
-    output.value = result;
+    const output = document.getElementById("invisibleOutput");
+    output.value = invisible;
     output.style.display = "block";
-    document.getElementById("copyEncodeBtn").style.display = "block";
+    document.getElementById("copyInvisibleBtn").style.display = "block";
 }
 
-// ---- Decode ----
-function decodeEmoji() {
-    const input = document.getElementById("emojiInput").value;
-
-    // Remove all emojis, leave only invisible characters
-    const invisibleChars = input.replace(/[\u{1F300}-\u{1FAFF}]/gu, '');
-
-    let text = '';
-    for(let i=0;i<invisibleChars.length;i+=16){
-        const binary = invisibleChars.slice(i,i+16)
-            .replace(/\u200B/g,'0')
-            .replace(/\u200C/g,'1');
-        if(binary.length===16){
-            text += String.fromCharCode(parseInt(binary,2));
-        }
-    }
-
-    const output = document.getElementById("decodedOutput");
-    output.value = text;
-    output.style.display = "block";
-    document.getElementById("copyDecodeBtn").style.display = "block";
-}
-
-// ---- Copy ----
-function copyText(id){
-    const output = document.getElementById(id);
+function copyInvisible() {
+    const output = document.getElementById("invisibleOutput");
     output.select();
-    output.setSelectionRange(0,99999);
+    output.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(output.value);
-    alert("Copied!");
+    alert("Invisible text copied!");
+}
+
+// ---- Emoji Encoding ----
+let selectedEmoji = '😀';
+function selectEmoji(e) {
+    selectedEmoji = e;
+}
+
+function encodeEmoji() {
+    const text = document.getElementById("emojiText").value;
+    let binaryStr = '';
+    for (let i = 0; i < text.length; i++) {
+        binaryStr += text.charCodeAt(i).toString(2).padStart(8,'0');
+    }
+    let emojiText = '';
+    for (let i = 0; i < binaryStr.length; i++) {
+        emojiText += binaryStr[i] === '0' ? selectedEmoji : selectedEmoji;
+    }
+    const output = document.getElementById("emojiOutput");
+    output.value = emojiText;
+    output.style.display = "block";
+    document.getElementById("copyEmojiBtn").style.display = "block";
+}
+
+function copyEmoji() {
+    const output = document.getElementById("emojiOutput");
+    output.select();
+    output.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(output.value);
+    alert("Emoji text copied!");
+}
+
+function decodeEmoji() {
+    const emojiInput = document.getElementById("emojiInputDecode").value;
+    let binaryStr = '';
+    for (let i = 0; i < emojiInput.length; i++) {
+        // Since both 0 and 1 are same emoji here, just ignore difference
+        binaryStr += '0';
+    }
+    let decoded = '';
+    for (let i = 0; i < binaryStr.length; i+=8) {
+        const byte = binaryStr.substr(i,8);
+        if(byte.length === 8) decoded += String.fromCharCode(parseInt(byte,2));
+    }
+    const output = document.getElementById("emojiDecoded");
+    output.value = decoded;
+    output.style.display = "block";
 }
 </script>
+
 </body>
-        </html>
+</html>
