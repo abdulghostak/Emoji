@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invisible Text & Secret Language App</title>
+<title>Invisible Text Generator & Secret Language</title>
 <style>
+/* General body & layout */
 body {
     margin: 0;
     padding: 0;
@@ -14,9 +15,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: 100vh;
     padding: 20px;
+    min-height: 100vh;
 }
+
+/* Container card */
 .container {
     background: rgba(30,30,30,0.95);
     padding: 25px 20px;
@@ -29,8 +32,9 @@ body {
     flex-direction: column;
     gap: 15px;
     box-sizing: border-box;
-    position: relative;
 }
+
+/* Brand name */
 .brand {
     text-align: center;
     font-size: 2em;
@@ -39,12 +43,31 @@ body {
     margin-bottom: 10px;
     letter-spacing: 3px;
 }
+
+/* Secret Language button */
+#secretLangBtn {
+    display: block;
+    margin: 0 auto 15px auto;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #00ffaa, #00dd88);
+    color: #111;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
+}
+
+/* Heading */
 h1 {
     text-align: center;
     margin: 0 0 10px 0;
     font-size: 1.6em;
     color: #00ffaa;
 }
+
+/* Textarea & button styles */
 textarea {
     width: 100%;
     border-radius: 12px;
@@ -57,6 +80,8 @@ textarea {
     resize: none;
     box-sizing: border-box;
 }
+
+/* Buttons */
 button {
     padding: 15px;
     border-radius: 12px;
@@ -69,84 +94,78 @@ button {
     transition: all 0.3s ease;
     box-shadow: 0 5px 20px rgba(0, 255, 170, 0.4);
 }
+
 button:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 255, 170, 0.6);
 }
+
+/* Output box */
 .output {
     min-height: 100px;
     word-break: break-word;
-    display: none;
+    display: none; /* hidden initially */
 }
-.top-right-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 8px 12px;
-    font-size: 14px;
-    background: linear-gradient(135deg, #00ffaa, #00dd88);
-}
-.back-button {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    padding: 8px 12px;
-    font-size: 14px;
-    background: linear-gradient(135deg, #00ffaa, #00dd88);
-}
-.page {
+
+/* Secret language container */
+.secret-container {
     display: none;
     flex-direction: column;
     gap: 15px;
 }
-.page.active {
-    display: flex;
+
+/* Back button for secret language */
+#backBtn {
+    align-self: flex-start;
+    padding: 8px 12px;
+    font-size: 14px;
+    background: transparent;
+    border: 2px solid #00ffaa;
+    color: #00ffaa;
+    border-radius: 8px;
+    cursor: pointer;
 }
+
+/* Mobile optimization */
 @media (max-width: 500px) {
     .brand { font-size: 1.7em; }
     h1 { font-size: 1.4em; }
-    button { font-size: 16px; padding: 12px; }
-    .top-right-button, .back-button { font-size: 12px; padding: 6px 10px; }
+    button, #secretLangBtn { font-size: 16px; padding: 12px; }
 }
 </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Secret Language button (top) -->
+    <button id="secretLangBtn" onclick="openSecretLanguage()">SECRET LANGUAGE</button>
 
-    <!-- Secret Language Toggle Button -->
-    <button class="top-right-button" onclick="showSecretLanguage()">Secret Language</button>
+    <!-- Brand Name -->
+    <div class="brand">GHOST AK</div>
 
-    <!-- Invisible Text Page -->
-    <div id="invisiblePage" class="page active">
-        <div class="brand">GHOST AK</div>
-        <h1>Invisible Text Generator</h1>
-        <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
-        <button onclick="generateInvisible()">Generate Invisible Text</button>
-        <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
-        <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
-    </div>
+    <!-- Invisible Text Section -->
+    <h1>Invisible Text Generator</h1>
+    <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
+    <button onclick="generateInvisible()">Generate Invisible Text</button>
+    <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
+    <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
 
-    <!-- Secret Language Page -->
-    <div id="secretPage" class="page">
-        <button class="back-button" onclick="backToInvisible()">Back</button>
-        <div class="brand">GHOST AK</div>
-        <h1>Secret Language</h1>
-        <textarea id="secretInput" placeholder="Type message to encode..."></textarea>
-        <button onclick="encodeSecret()">Encode</button>
-        <textarea class="output" id="secretOutput" readonly placeholder="Encoded message will appear here..."></textarea>
-        <button id="copySecret" onclick="copySecret()" style="display:none;">Copy Encoded</button>
+    <!-- Secret Language Section -->
+    <div class="secret-container" id="secretContainer">
+        <button id="backBtn" onclick="backToInvisible()">← Back</button>
+        <textarea id="secretInput" placeholder="Type your secret message here..."></textarea>
+        <button onclick="encodeSecret()">Encode Secret</button>
+        <textarea class="output" id="secretOutput" readonly placeholder="Encoded secret will appear here..."></textarea>
+        <button id="copySecretBtn" onclick="copySecret()" style="display:none;">Copy Secret</button>
 
         <textarea id="decodeInput" placeholder="Paste secret message to decode..."></textarea>
-        <button onclick="decodeSecret()">Decode</button>
+        <button onclick="decodeSecret()">Decode Secret</button>
         <textarea class="output" id="decodedOutput" readonly placeholder="Decoded message will appear here..."></textarea>
-        <button id="copyDecoded" onclick="copyDecoded()" style="display:none;">Copy Decoded</button>
     </div>
-
 </div>
 
 <script>
-// ---------- Invisible Text ----------
+// ----- Invisible Text -----
 function generateInvisible() {
     const text = document.getElementById("invisibleText").value;
     let invisible = '';
@@ -161,6 +180,7 @@ function generateInvisible() {
     output.style.display = "block";
     document.getElementById("copyButton").style.display = "block";
 }
+
 function copyInvisible() {
     const output = document.getElementById("invisibleOutput");
     output.select();
@@ -169,74 +189,56 @@ function copyInvisible() {
     alert("Invisible text copied!");
 }
 
-// ---------- Page Switching ----------
-function showSecretLanguage() {
-    document.getElementById("invisiblePage").classList.remove("active");
-    document.getElementById("secretPage").classList.add("active");
-}
-function backToInvisible() {
-    document.getElementById("secretPage").classList.remove("active");
-    document.getElementById("invisiblePage").classList.add("active");
-}
+// ----- Secret Language -----
+const secretMap = {
+    a: 'q', b: 'v', c: 'z', d: 't', e: 'x', f: 'r', g: 'm', h: 'w',
+    i: 'k', j: 's', k: 'n', l: 'y', m: 'p', n: 'o', o: 'u', p: 'f',
+    q: 'l', r: 'd', s: 'j', t: 'g', u: 'h', v: 'i', w: 'a', x: 'b',
+    y: 'c', z: 'e', ' ': ' '
+};
+const reverseMap = Object.fromEntries(Object.entries(secretMap).map(([k,v])=>[v,k]));
 
-// ---------- Secret Language Mapping ----------
-const secretMap = {};
-const reverseMap = {};
-const symbols = '⚡⭐✨🔷🔶🔹🔸🔥💎💫🌟'.split('');
-const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?'.split('');
-
-// Create random one-to-one mapping
-for(let i=0;i<chars.length;i++){
-    const sym1 = symbols[Math.floor(Math.random()*symbols.length)];
-    const sym2 = symbols[Math.floor(Math.random()*symbols.length)];
-    const key = sym1 + sym2;
-    secretMap[chars[i]] = key;
-    reverseMap[key] = chars[i];
-}
-
-// ---------- Encode Secret ----------
 function encodeSecret() {
-    const input = document.getElementById("secretInput").value;
+    const text = document.getElementById("secretInput").value.toLowerCase();
     let encoded = '';
-    for (let ch of input) {
-        encoded += secretMap[ch] || ch;
+    for (let char of text) {
+        encoded += secretMap[char] || char;
     }
     const output = document.getElementById("secretOutput");
     output.value = encoded;
     output.style.display = "block";
-    document.getElementById("copySecret").style.display = "block";
+    document.getElementById("copySecretBtn").style.display = "block";
 }
 
-// ---------- Decode Secret ----------
 function decodeSecret() {
-    const input = document.getElementById("decodeInput").value;
+    const text = document.getElementById("decodeInput").value.toLowerCase();
     let decoded = '';
-    for (let i = 0; i < input.length; i+=2) {
-        const pair = input[i] + (input[i+1] || '');
-        decoded += reverseMap[pair] || pair;
+    for (let char of text) {
+        decoded += reverseMap[char] || char;
     }
     const output = document.getElementById("decodedOutput");
     output.value = decoded;
     output.style.display = "block";
-    document.getElementById("copyDecoded").style.display = "block";
 }
 
-// ---------- Copy Secret / Decoded ----------
 function copySecret() {
     const output = document.getElementById("secretOutput");
     output.select();
-    output.setSelectionRange(0,99999);
+    output.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(output.value);
-    alert("Encoded secret copied!");
+    alert("Secret copied!");
 }
-function copyDecoded() {
-    const output = document.getElementById("decodedOutput");
-    output.select();
-    output.setSelectionRange(0,99999);
-    navigator.clipboard.writeText(output.value);
-    alert("Decoded text copied!");
+
+// ----- Navigation -----
+function openSecretLanguage() {
+    document.getElementById("secretContainer").style.display = "flex";
+    document.getElementById("invisibleText").parentElement.style.display = "none";
+}
+function backToInvisible() {
+    document.getElementById("secretContainer").style.display = "none";
+    document.getElementById("invisibleText").parentElement.style.display = "flex";
 }
 </script>
 
 </body>
-</html>
+    </html>
