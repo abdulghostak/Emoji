@@ -1,8 +1,12 @@
 {
   "name": "Incode",
   "short_name": "Ghost AK",
+  "id": "/",
   "start_url": "/Emoji/index.html",
+  "scope": "/Emoji/",
   "display": "standalone",
+  "orientation": "portrait",
+  "description": "A private messaging tool to encode and decode invisible text. Share secret messages that only other Incode users can read.",
   "background_color": "#1a1a1a",
   "theme_color": "#00ffaa",
   "icons": [
@@ -17,21 +21,20 @@
       "type": "image/png"
     }
   ],
-  "id": "/",
-  "description": "A private messaging tool to encode and decode invisible text. Share secret messages that only other Incode users can read.",
-  "lang": "en",
-  "dir": "ltr",
-  "scope": "/Emoji/",
-  "orientation": "portrait",
   "shortcuts": [
     {
-      "name": "Secret Message",
+      "name": "New Secret Message",
       "url": "/Emoji/index.html",
       "description": "Quickly open Incode to write or decode a secret message."
     }
   ],
-  "categories": [
-    "productivity",
-    "utilities"
-  ]
+  "categories": ["productivity", "utilities"],
+  "share_target": {
+    "action": "/Emoji/index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text"
+    }
+  }
 }
