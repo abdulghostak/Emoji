@@ -142,7 +142,7 @@ button:hover {
     <div id="invisibleSection">
         <h1>Invisible Text Generator</h1>
         <textarea id="invisibleText" placeholder="Type your text here to make it invisible..."></textarea>
-        <button onclick="generateInvisible()">Generate Invisible Text</button>
+        <button onclick="generateInvisible()" style="align-self:center;">Generate Invisible Text</button>
         <textarea class="output" id="invisibleOutput" readonly placeholder="Your invisible text will appear here..."></textarea>
         <button id="copyButton" onclick="copyInvisible()" style="display:none;">Copy Invisible Text</button>
     </div>
@@ -195,17 +195,18 @@ function backToInvisible() {
     document.getElementById("secretLangSection").style.display = "none";
 }
 
-// ---- Secret Language Encode/Decode ----
+// ---- Secret Language Encode/Decode (letters + numbers + Greek) ----
 const encodeMap = {
-  'a':'q','b':'w','c':'e','d':'r','e':'t','f':'y','g':'u','h':'i',
-  'i':'o','j':'p','k':'a','l':'s','m':'d','n':'f','o':'g','p':'h',
-  'q':'j','r':'k','s':'l','t':'z','u':'x','v':'c','w':'v','x':'b',
-  'y':'n','z':'m',
-  'A':'Q','B':'W','C':'E','D':'R','E':'T','F':'Y','G':'U','H':'I',
-  'I':'O','J':'P','K':'A','L':'S','M':'D','N':'F','O':'G','P':'H',
-  'Q':'J','R':'K','S':'L','T':'Z','U':'X','V':'C','W':'V','X':'B',
-  'Y':'N','Z':'M'
+'a':'Δ','b':'7','c':'θ','d':'9','e':'Σ','f':'5','g':'λ','h':'#',
+'i':'1','j':'Ψ','k':'κ','l':'Λ','m':'π','n':'η','o':'Ω','p':'ρ',
+'q':'φ','r':'γ','s':'$','t':'τ','u':'µ','v':'ν','w':'ω','x':'χ',
+'y':'¥','z':'ζ',
+'A':'Δ','B':'7','C':'θ','D':'9','E':'Σ','F':'5','G':'λ','H':'#',
+'I':'1','J':'Ψ','K':'κ','L':'Λ','M':'π','N':'η','O':'Ω','P':'ρ',
+'Q':'φ','R':'γ','S':'$','T':'τ','U':'µ','V':'ν','W':'ω','X':'χ',
+'Y':'¥','Z':'ζ'
 };
+
 const decodeMap = Object.fromEntries(Object.entries(encodeMap).map(([k,v]) => [v,k]));
 
 function encodeSecret() {
@@ -219,7 +220,7 @@ function encodeSecret() {
 function decodeSecret() {
     const input = document.getElementById("secretOutput").value;
     const decoded = input.split('').map(c => decodeMap[c] || c).join('');
-    alert("Decoded: " + decoded);
+    alert("Decoded Message: " + decoded);
 }
 
 function copySecret() {
