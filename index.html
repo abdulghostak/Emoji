@@ -105,10 +105,47 @@ button:hover {
     h1 { font-size: 1.4em; }
     button { font-size: 16px; padding: 12px; }
 }
+
+/* --- Passkey Overlay --- */
+#passkeyOverlay {
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+#passkeyOverlay input {
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    text-align: center;
+}
+#passkeyOverlay button {
+    width: 200px;
+}
+#passkeyOverlay h1 {
+    color: #00ffaa;
+    font-size: 2em;
+}
 </style>
 </head>
 <body>
 
+<!-- === PASSKEY SCREEN === -->
+<div id="passkeyOverlay">
+    <h1>Enter Passkey</h1>
+    <input type="password" id="appPasskey" placeholder="Enter passkey" />
+    <button onclick="checkPasskey()">Unlock</button>
+</div>
+
+<!-- === EXISTING APP HTML === -->
 <div class="container">
     <!-- Top Secret Language Button -->
     <div class="top-button">
@@ -166,6 +203,24 @@ button:hover {
 </div>
 
 <script>
+// --- PASSKEY FUNCTION ---
+function checkPasskey() {
+    const input = document.getElementById('appPasskey').value;
+    if(input === 'Akak0852') {
+        document.getElementById('passkeyOverlay').style.display = 'none';
+        localStorage.setItem('appUnlocked', 'true'); // remember for next use on same device
+    } else {
+        alert('Incorrect passkey!');
+    }
+}
+
+// Automatically check if app was already unlocked on this device
+window.addEventListener('load', () => {
+    if(localStorage.getItem('appUnlocked') === 'true') {
+        document.getElementById('passkeyOverlay').style.display = 'none';
+    }
+});
+
 // ---- Invisible Text ----
 function generateInvisible() {
     const text = document.getElementById("invisibleText").value;
@@ -263,4 +318,4 @@ function copyDecoded() {
 </script>
 
 </body>
-</html>
+        </html>
